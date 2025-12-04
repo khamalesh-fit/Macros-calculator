@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>NeoGym Macro Tracker</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --yellow: #ffc800;
+      --yellow-soft: #ffe680;
+      --black: #0d0d0d;
+      --white: #ffffff;
+      --grey: #1f1f1f;
+      --accent: #ffdd33;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: radial-gradient(circle at top, #222 0, #000 55%);
+      color: var(--white);
+      padding: 20px;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 900px;
+      background: linear-gradient(135deg, #101010 0%, #181818 50%, #101010 100%);
+      border-radius: 24px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .card-header {
+      padding: 24px 28px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      background: linear-gradient(120deg, #000 0, #111 45%, #000 100%);
+    }
+
+    .title-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: rgba(255, 200, 0, 0.12);
+      color: var(--yellow);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .badge-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: var(--yellow);
+      box-shadow: 0 0 10px rgba(255, 200, 0, 0.9);
+    }
+
+    h1 {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    h1 span {
+      font-size: 11px;
+      font-weight: 500;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--yellow);
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+    }
+
+    .subtitle {
+      font-size: 12px;
+      color: #bbbbbb;
+    }
+
+    .logo-tag {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 8px;
+    }
+
+    .weight-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      font-size: 11px;
+      color: #bbbbbb;
+    }
+
+    .weight-chip strong {
+      color: var(--yellow);
+      font-weight: 600;
+    }
+
+    .logo {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, var(--yellow) 0, #ffef99 100%);
+      color: #222;
+      box-shadow: 0 0 18px rgba(255, 200, 0, 0.7);
+    }
+
+    .card-body {
+      padding: 18px 24px 22px;
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+      gap: 20px;
+    }
+
+    @media (max-width: 780px) {
+      .card-body {
+        grid-template-columns: 1fr;
+      }
+      .card-header {
+        flex-direction: column;
+        gap: 14px;
+      }
+      .logo-tag {
+        align-items: flex-start;
+      }
+    }
+
+    .section-title {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #888888;
+      margin-bottom: 12px;
+    }
+
+    .inputs-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    @media (max-width: 600px) {
+      .inputs-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .field {
+      background: radial-gradient(circle at top left, rgba(255, 255, 255, 0.06), rgba(0, 0, 0, 0.9));
+      border-radius: 14px;
+      padding: 10px 10px 12px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .field-label-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 4px;
+    }
+
+    .field-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: #aaaaaa;
+    }
+
+    .field-label span {
+      color: var(--yellow);
+    }
+
+    .field-tag {
+      font-size: 10px;
+      padding: 2px 7px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: #bbbbbb;
+    }
+
+    .field-main {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+    }
+
+    .field-main input {
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--white);
+      font-size: 18px;
+      font-weight: 600;
+      width: 80px;
+    }
+
+    .field-main input::placeholder {
+      color: #555555;
+    }
+
+    .field-main span {
+      font-size: 11px;
+      color: #888888;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+
+    .hint {
+      font-size: 10px;
+      color: #777777;
+      margin-top: 4px;
+    }
+
+    .divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+      margin: 14px 0 12px;
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 4px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      border: none;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .btn-primary {
+      flex: 1;
+      min-width: 130px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, var(--yellow) 0%, #ffef99 100%);
+      color: #111111;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      box-shadow: 0 0 20px rgba(255, 200, 0, 0.5);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .btn-primary span.icon {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border-radius: 999px;
+      border: 1px solid rgba(0, 0, 0, 0.5);
+      background: #111;
+      position: relative;
+    }
+
+    .btn-primary span.icon::after {
+      content: "";
+      position: absolute;
+      inset: 3px;
+      border-radius: inherit;
+      background: radial-gradient(circle, var(--yellow) 0, #222 60%);
+    }
+
+    .btn-ghost {
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(255, 255, 255, 0.02);
+      color: #cccccc;
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      min-width: 90px;
+    }
+
+    .btn-ghost:hover {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .result-panel {
+      background: radial-gradient(circle at top right, rgba(255, 200, 0, 0.25), rgba(0, 0, 0, 0.95));
+      border-radius: 18px;
+      padding: 14px 14px 16px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .result-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .result-title {
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #dddddd;
+    }
+
+    .result-chip {
+      font-size: 10px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: rgba(0, 0, 0, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #aaaaaa;
+    }
+
+    .total-calories {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+    }
+
+    .total-main {
+      font-size: 32px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      color: var(--yellow);
+      text-shadow: 0 0 20px rgba(255, 200, 0, 0.7);
+    }
+
+    .total-unit {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: #eeeeee;
+    }
+
+    .total-sub {
+      font-size: 11px;
+      color: #cccccc;
+      margin-top: 2px;
+    }
+
+    .macros-row {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    @media (max-width: 480px) {
+      .macros-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .macro-card {
+      padding: 8px 9px 9px;
+      border-radius: 12px;
+      background: rgba(0, 0, 0, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .macro-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+    }
+
+    .macro-name {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .dot-protein,
+    .dot-fat,
+    .dot-carbs {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+    }
+
+    .dot-protein {
+      background: var(--yellow);
+      box-shadow: 0 0 10px rgba(255, 200, 0, 1);
+    }
+
+    .dot-fat {
+      background: #ff9f1c;
+      box-shadow: 0 0 10px rgba(255, 159, 28, 1);
+    }
+
+    .dot-carbs {
+      background: #fffbfa;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.9);
+    }
+
+    .macro-tag {
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.04);
+      color: #aaaaaa;
+    }
+
+    .macro-values {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-top: 2px;
+    }
+
+    .macro-kcal {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--yellow-soft);
+    }
+
+    .macro-kcal span {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: #dddddd;
+      margin-left: 4px;
+    }
+
+    .macro-grams {
+      font-size: 11px;
+      color: #bbbbbb;
+    }
+
+    .macro-note {
+      font-size: 10px;
+      color: #777777;
+      margin-top: 2px;
+    }
+
+    .progress-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin-top: 6px;
+    }
+
+    .progress-bar {
+      position: relative;
+      height: 6px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.05);
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      position: absolute;
+      inset: 0;
+      width: 0%;
+      background: linear-gradient(90deg, var(--yellow), #ffffff);
+      box-shadow: 0 0 10px rgba(255, 200, 0, 0.9);
+      transition: width 0.3s ease-out;
+    }
+
+    .meta-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      margin-top: 6px;
+      font-size: 10px;
+      color: #aaaaaa;
+    }
+
+    .meta-row span strong {
+      color: var(--yellow);
+    }
+
+    .note {
+      font-size: 9px;
+      color: #777777;
+      margin-top: 2px;
+      line-height: 1.4;
+    }
+
+    .error {
+      margin-top: 6px;
+      font-size: 11px;
+      color: #ff7373;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="card-header">
+      <div class="title-wrap">
+        <div class="badge">
+          <div class="badge-dot"></div>
+          Muscle gain macro tracker
+        </div>
+        <h1>
+          Daily Macro Targets
+          <span>4 / 4 / 9 KCAL</span>
+        </h1>
+        <p class="subtitle">
+          Enter grams per kg for protein, fats, and carbs to get precise calorie targets for hypertrophy-focused plans.
+        </p>
+      </div>
+      <div class="logo-tag">
+        <div class="weight-chip">
+          Default unit: <strong>kg</strong>
+        </div>
+        <div class="logo">
+          MACRO • ENGINE
+        </div>
+      </div>
+    </div>
+
+    <div class="card-body">
+      <div>
+        <div class="section-title">Input setup</div>
+        <div class="field">
+          <div class="field-label-row">
+            <div class="field-label"><span>Body weight</span></div>
+            <div class="field-tag">kg</div>
+          </div>
+          <div class="field-main">
+            <input type="number" id="bodyWeight" placeholder="75" step="0.1" />
+            <span>kg</span>
+          </div>
+          <div class="hint">Use current body weight in kilograms.</div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="inputs-grid">
+          <div class="field">
+            <div class="field-label-row">
+              <div class="field-label"><span>Protein</span> g / kg</div>
+              <div class="field-tag">Muscle repair</div>
+            </div>
+            <div class="field-main">
+              <input type="number" id="proteinPerKg" placeholder="2.0" step="0.1" />
+              <span>g / kg</span>
+            </div>
+            <div class="hint">Typical hypertrophy range: 1.6 – 2.2 g/kg.</div>
+          </div>
+
+          <div class="field">
+            <div class="field-label-row">
+              <div class="field-label"><span>Fat</span> g / kg</div>
+              <div class="field-tag">Hormones</div>
+            </div>
+            <div class="field-main">
+              <input type="number" id="fatPerKg" placeholder="0.8" step="0.1" />
+              <span>g / kg</span>
+            </div>
+            <div class="hint">Common range: 0.6 – 1.0 g/kg.</div>
+          </div>
+
+          <div class="field">
+            <div class="field-label-row">
+              <div class="field-label"><span>Carbs</span> g / kg</div>
+              <div class="field-tag">Training fuel</div>
+            </div>
+            <div class="field-main">
+              <input type="number" id="carbPerKg" placeholder="4.0" step="0.1" />
+              <span>g / kg</span>
+            </div>
+            <div class="hint">Adjust based on training volume and total calories.</div>
+          </div>
+
+          <div class="field">
+            <div class="field-label-row">
+              <div class="field-label">Macro <span>density</span></div>
+              <div class="field-tag">Fixed</div>
+            </div>
+            <div class="field-main" style="font-size: 11px; flex-wrap: wrap;">
+              <span>Protein: 4 kcal / g</span>
+              <span>•</span>
+              <span>Carbs: 4 kcal / g</span>
+              <span>•</span>
+              <span>Fat: 9 kcal / g</span>
+            </div>
+            <div class="hint">
+              Standard energy density values used in nutrition science.
+            </div>
+          </div>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn-primary" onclick="calculateMacros()">
+            <span class="icon"></span>
+            CALCULATE TARGETS
+          </button>
+          <button class="btn-ghost" onclick="resetForm()">Reset</button>
+        </div>
+        <div id="errorMessage" class="error" style="display:none;"></div>
+      </div>
+
+      <div>
+        <div class="section-title">Calorie breakdown</div>
+
+        <div class="result-panel">
+          <div class="result-header">
+            <div>
+              <div class="result-title">Total daily calories</div>
+              <div class="total-calories">
+                <div id="totalCalories" class="total-main">0</div>
+                <div>
+                  <div class="total-unit">KCAL</div>
+                  <div id="kcalPerKg" class="total-sub">0 kcal / kg</div>
+                </div>
+              </div>
+            </div>
+            <div class="result-chip">
+              Optimized for lean mass gain
+            </div>
+          </div>
+
+          <div class="macros-row">
+            <div class="macro-card">
+              <div class="macro-top">
+                <div class="macro-name">
+                  <span class="dot-protein"></span> Protein
+                </div>
+                <div class="macro-tag" id="proteinPercent">0%</div>
+              </div>
+              <div class="macro-values">
+                <div class="macro-kcal">
+                  <span id="proteinKcal">0</span><span>kcal</span>
+                </div>
+                <div class="macro-grams">
+                  <span id="proteinGrams">0</span> g
+                </div>
+              </div>
+              <div class="progress-wrap">
+                <div class="progress-bar">
+                  <div id="proteinBar" class="progress-fill"></div>
+                </div>
+              </div>
+              <div class="macro-note">
+                4 kcal per gram of protein.
+              </div>
+            </div>
+
+            <div class="macro-card">
+              <div class="macro-top">
+                <div class="macro-name">
+                  <span class="dot-fat"></span> Fat
+                </div>
+                <div class="macro-tag" id="fatPercent">0%</div>
+              </div>
+              <div class="macro-values">
+                <div class="macro-kcal">
+                  <span id="fatKcal">0</span><span>kcal</span>
+                </div>
+                <div class="macro-grams">
+                  <span id="fatGrams">0</span> g
+                </div>
+              </div>
+              <div class="progress-wrap">
+                <div class="progress-bar">
+                  <div id="fatBar" class="progress-fill"></div>
+                </div>
+              </div>
+              <div class="macro-note">
+                9 kcal per gram of fat.
+              </div>
+            </div>
+
+            <div class="macro-card">
+              <div class="macro-top">
+                <div class="macro-name">
+                  <span class="dot-carbs"></span> Carbs
+                </div>
+                <div class="macro-tag" id="carbPercent">0%</div>
+              </div>
+              <div class="macro-values">
+                <div class="macro-kcal">
+                  <span id="carbKcal">0</span><span>kcal</span>
+                </div>
+                <div class="macro-grams">
+                  <span id="carbGrams">0</span> g
+                </div>
+              </div>
+              <div class="progress-wrap">
+                <div class="progress-bar">
+                  <div id="carbBar" class="progress-fill"></div>
+                </div>
+              </div>
+              <div class="macro-note">
+                4 kcal per gram of carbohydrate.
+              </div>
+            </div>
+          </div>
+
+          <div class="macros-row">
+            <div class="macro-card">
+              <div class="macro-top">
+                <div class="macro-name">
+                  <span class="dot-protein"></span> Fiber Target
+                </div>
+              </div>
+              <div class="macro-values">
+                <div class="macro-kcal">
+                  <span id="fiberMin">0</span><span>–</span><span id="fiberMax">0</span> g
+                </div>
+              </div>
+              <div class="macro-note">
+                0.25–0.4g fiber per gram of protein for muscle building.
+              </div>
+            </div>
+          </div>
+
+          <div class="meta-row">
+            <span>Protein density: <strong>4 kcal/g</strong></span>
+            <span>Carb density: <strong>4 kcal/g</strong></span>
+            <span>Fat density: <strong>9 kcal/g</strong></span>
+          </div>
+          <div class="note">
+            Tailor the grams per kg to your phase (cut, maintenance, bulk) and training volume while staying close to your target total calories.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const KCAL_PER_GRAM = {
+      protein: 4,
+      carbs: 4,
+      fat: 9
+    };
+
+    function formatNumber(num) {
+      return Number.isFinite(num) ? num.toFixed(0) : "0";
+    }
+
+    function formatDecimal(num, decimals = 1) {
+      return Number.isFinite(num) ? num.toFixed(decimals) : "0.0";
+    }
+
+    function calculateMacros() {
+      const bodyWeight = parseFloat(document.getElementById("bodyWeight").value);
+      const proteinPerKg = parseFloat(document.getElementById("proteinPerKg").value);
+      const fatPerKg = parseFloat(document.getElementById("fatPerKg").value);
+      const carbPerKg = parseFloat(document.getElementById("carbPerKg").value);
+      const errorEl = document.getElementById("errorMessage");
+
+      if (
+        !bodyWeight || bodyWeight <= 0 ||
+        !proteinPerKg || proteinPerKg <= 0 ||
+        !fatPerKg || fatPerKg <= 0 ||
+        !carbPerKg || carbPerKg <= 0
+      ) {
+        errorEl.textContent = "Enter positive values for weight and all three macros to generate targets.";
+        errorEl.style.display = "block";
+        return;
+      } else {
+        errorEl.style.display = "none";
+      }
+
+      const proteinGrams = bodyWeight * proteinPerKg;
+      const fatGrams = bodyWeight * fatPerKg;
+      const carbGrams = bodyWeight * carbPerKg;
+
+      const proteinKcal = proteinGrams * KCAL_PER_GRAM.protein;
+      const fatKcal = fatGrams * KCAL_PER_GRAM.fat;
+      const carbKcal = carbGrams * KCAL_PER_GRAM.carbs;
+
+      const totalKcal = proteinKcal + fatKcal + carbKcal;
+      const kcalPerKg = totalKcal / bodyWeight;
+
+      const proteinPercent = (proteinKcal / totalKcal) * 100;
+      const fatPercent = (fatKcal / totalKcal) * 100;
+      const carbPercent = (carbKcal / totalKcal) * 100;
+
+      // Fiber calculation
+      const fiberMin = proteinGrams * 0.25;
+      const fiberMax = proteinGrams * 0.4;
+
+      document.getElementById("proteinGrams").textContent = formatNumber(proteinGrams);
+      document.getElementById("fatGrams").textContent = formatNumber(fatGrams);
+      document.getElementById("carbGrams").textContent = formatNumber(carbGrams);
+
+      document.getElementById("proteinKcal").textContent = formatNumber(proteinKcal);
+      document.getElementById("fatKcal").textContent = formatNumber(fatKcal);
+      document.getElementById("carbKcal").textContent = formatNumber(carbKcal);
+
+      document.getElementById("totalCalories").textContent = formatNumber(totalKcal);
+      document.getElementById("kcalPerKg").textContent = formatDecimal(kcalPerKg, 1) + " kcal / kg";
+
+      document.getElementById("proteinPercent").textContent = formatNumber(proteinPercent) + "%";
+      document.getElementById("fatPercent").textContent = formatNumber(fatPercent) + "%";
+      document.getElementById("carbPercent").textContent = formatNumber(carbPercent) + "%";
+
+      document.getElementById("proteinBar").style.width = Math.max(0, Math.min(100, proteinPercent)) + "%";
+      document.getElementById("fatBar").style.width = Math.max(0, Math.min(100, fatPercent)) + "%";
+      document.getElementById("carbBar").style.width = Math.max(0, Math.min(100, carbPercent)) + "%";
+
+      // Fiber display
+      document.getElementById("fiberMin").textContent = formatNumber(fiberMin);
+      document.getElementById("fiberMax").textContent = formatNumber(fiberMax);
+    }
+
+    function resetForm() {
+      document.getElementById("bodyWeight").value = "";
+      document.getElementById("proteinPerKg").value = "";
+      document.getElementById("fatPerKg").value = "";
+      document.getElementById("carbPerKg").value = "";
+      document.getElementById("errorMessage").style.display = "none";
+
+      document.getElementById("proteinGrams").textContent = "0";
+      document.getElementById("fatGrams").textContent = "0";
+      document.getElementById("carbGrams").textContent = "0";
+
+      document.getElementById("proteinKcal").textContent = "0";
+      document.getElementById("fatKcal").textContent = "0";
+      document.getElementById("carbKcal").textContent = "0";
+
+      document.getElementById("totalCalories").textContent = "0";
+      document.getElementById("kcalPerKg").textContent = "0 kcal / kg";
+
+      document.getElementById("proteinPercent").textContent = "0%";
+      document.getElementById("fatPercent").textContent = "0%";
+      document.getElementById("carbPercent").textContent = "0%";
+
+      document.getElementById("proteinBar").style.width = "0%";
+      document.getElementById("fatBar").style.width = "0%";
+      document.getElementById("carbBar").style.width = "0%";
+
+      document.getElementById("fiberMin").textContent = "0";
+      document.getElementById("fiberMax").textContent = "0";
+    }
+  </script>
+</body>
+</html>
